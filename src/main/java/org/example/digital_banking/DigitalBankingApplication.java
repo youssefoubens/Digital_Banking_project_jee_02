@@ -1,6 +1,6 @@
 package org.example.digital_banking;
 
-import org.example.digital_banking.entities.BankAccount;
+
 import org.example.digital_banking.entities.CurrentAccount;
 import org.example.digital_banking.entities.Customer;
 import org.example.digital_banking.entities.SavingAccount;
