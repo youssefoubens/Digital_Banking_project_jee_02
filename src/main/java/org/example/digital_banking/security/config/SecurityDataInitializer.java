@@ -56,9 +56,9 @@ public class SecurityDataInitializer implements CommandLineRunner {
                     .roles(new ArrayList<>())
                     .build();
             adminUser.getRoles().add(adminRole);
-            
+
             User savedUser = userRepository.save(adminUser);
-            
+
             // Create customer profile for admin
             Customer adminCustomer = Customer.builder()
                     .name("Admin User")
@@ -69,9 +69,9 @@ public class SecurityDataInitializer implements CommandLineRunner {
                     .city("Admin City")
                     .user(savedUser)
                     .build();
-            
+
             customerRepository.save(adminCustomer);
-            
+
             System.out.println("Admin user created");
         }
     }

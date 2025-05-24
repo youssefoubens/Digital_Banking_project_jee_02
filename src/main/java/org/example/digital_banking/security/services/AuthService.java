@@ -51,9 +51,9 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtil.generateToken(authentication);
 
-        org.springframework.security.core.userdetails.User userDetails = 
+        org.springframework.security.core.userdetails.User userDetails =
                 (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-        
+
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());

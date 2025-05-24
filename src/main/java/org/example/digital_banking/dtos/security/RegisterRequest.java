@@ -15,9 +15,12 @@ public class RegisterRequest {
     private String email;
     private String firstName;
     private String lastName;
-    
+
     // Customer related fields
     private String phone;
     private String address;
     private String city;
+
+    // Role related field
+    private boolean isCustomerAdmin = false;
 }

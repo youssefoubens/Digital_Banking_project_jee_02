@@ -46,7 +46,7 @@ public class CompteController {
     }
 
     // POST /comptes — créer un compte (using DTO)
-    @PostMapping
+    @PostMapping("new")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<BankAccountDTO> createAccount(@RequestBody BankAccountRequestDTO accountDTO) {
         try {
