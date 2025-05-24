@@ -23,4 +23,6 @@ public interface CustomerServiceinterface {
     void credit(Long accountId, CreditDebitRequestDTO requestDTO);
     void transfer(TransferRequestDTO transferRequestDTO);
     List<AccountOperationDTO> getAccountOperations(Long accountId);
+    List<BankAccountDTO> getAccountsByCustomerId(Long customerId);
+
 }

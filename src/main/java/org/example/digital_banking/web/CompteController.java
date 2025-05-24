@@ -25,7 +25,11 @@ public class CompteController {
     public ResponseEntity<List<BankAccountDTO>> getAllAccounts() {
         return ResponseEntity.ok(customerService.getAllAccounts());
     }
-
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<List<BankAccountDTO>> getAllAccountsByCustomer(@PathVariable Long customerId) {
+        List<BankAccountDTO> accounts = customerService.getAccountsByCustomerId(customerId);
+        return ResponseEntity.ok(accounts);
+    }
     // GET /comptes/{id} — afficher un compte spécifique
     @GetMapping("/{id}")
     public ResponseEntity<BankAccountDTO> getAccountById(@PathVariable Long id) {

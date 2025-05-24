@@ -258,4 +258,23 @@ public class CustomerService implements CustomerServiceinterface {
                 .map(operation -> bankAccountMapper.fromOperation((Operation) operation))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<BankAccountDTO> getAccountsByCustomerId(Long customerId) {
+        Customer customer = customerRepo.findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + customerId));
+
+        List<BankAccount> accounts = bankAccountRepo.findAccountsByCustomerId(customerId);
+        return accounts.stream()
+                .map(account -> {
+                    if (account instanceof SavingAccount) {
+                        return bankAccountMapper.fromSavingAccount((SavingAccount) account);
+                    } else {
+                        return bankAccountMapper.fromCurrentAccount((CurrentAccount) account);
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+
 }
