@@ -2,73 +2,88 @@ package org.example.digital_banking.mappers;
 
 import org.example.digital_banking.dtos.*;
 import org.example.digital_banking.entities.*;
-import org.springframework.stereotype.Service;
+import org.example.digital_banking.enums.AccountStatus;
+import org.example.digital_banking.enums.AccountType;
+import org.mapstruct.*;
 
-@Service
-public class BankAccountMapper {
-    public CustomerDTO fromCustomer(Customer customer) {
-        CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setCustomer_id(customer.getCustomer_id());
-        customerDTO.setName(customer.getName());
-        customerDTO.setEmail(customer.getEmail());
-        customerDTO.setPassword(customer.getPassword());
-        customerDTO.setPhone(customer.getPhone());
-        customerDTO.setAddress(customer.getAddress());
-        customerDTO.setCity(customer.getCity());
-        return customerDTO;
-    }
+/**
+ * Mapper interface for converting between entity objects and DTOs
+ */
+@Mapper(componentModel = "spring")
+public interface BankAccountMapper {
+    /**
+     * Convert a Customer entity to a CustomerDTO
+     *
+     * @param customer The Customer entity to convert
+     * @return The corresponding CustomerDTO
+     */
+    CustomerDTO fromCustomer(Customer customer);
 
-    public Customer fromCustomerDTO(CustomerDTO customerDTO) {
-        Customer customer = new Customer();
-        customer.setCustomer_id(customerDTO.getCustomer_id());
-        customer.setName(customerDTO.getName());
-        customer.setEmail(customerDTO.getEmail());
-        customer.setPassword(customerDTO.getPassword());
-        customer.setPhone(customerDTO.getPhone());
-        customer.setAddress(customerDTO.getAddress());
-        customer.setCity(customerDTO.getCity());
-        return customer;
-    }
+    /**
+     * Convert a CustomerDTO to a Customer entity
+     *
+     * @param customerDTO The CustomerDTO to convert
+     * @return The corresponding Customer entity
+     */
+    Customer fromCustomerDTO(CustomerDTO customerDTO);
 
-    public SavingAccountDTO fromSavingAccount(SavingAccount savingAccount) {
-        SavingAccountDTO savingAccountDTO = new SavingAccountDTO();
-        savingAccountDTO.setId(savingAccount.getIdBankAccount());
-        savingAccountDTO.setBalance(savingAccount.getBalance());
-        savingAccountDTO.setCreatedAt(savingAccount.getCreatedAt());
-        savingAccountDTO.setStatus(savingAccount.getStatus().toString());
-        savingAccountDTO.setCustomerDTO(fromCustomer(savingAccount.getCustomer()));
-        savingAccountDTO.setType("SAV");
-        savingAccountDTO.setInterestRate(savingAccount.getInterestRate());
-        return savingAccountDTO;
-    }
+    /**
+     * Convert a SavingAccount entity to a SavingAccountDTO
+     *
+     * @param savingAccount The SavingAccount entity to convert
+     * @return The corresponding SavingAccountDTO
+     */
+    @Mapping(source = "idBankAccount", target = "id")
+    @Mapping(source = "status", target = "status", qualifiedByName = "statusToString")
+    @Mapping(target = "type", constant = "SA")
+    @Mapping(source = "customer", target = "customerDTO")
+    SavingAccountDTO fromSavingAccount(SavingAccount savingAccount);
 
-    public CurrentAccountDTO fromCurrentAccount(CurrentAccount currentAccount) {
-        CurrentAccountDTO currentAccountDTO = new CurrentAccountDTO();
-        currentAccountDTO.setId(currentAccount.getIdBankAccount());
-        currentAccountDTO.setBalance(currentAccount.getBalance());
-        currentAccountDTO.setCreatedAt(currentAccount.getCreatedAt());
-        currentAccountDTO.setStatus(currentAccount.getStatus().toString());
-        currentAccountDTO.setCustomerDTO(fromCustomer(currentAccount.getCustomer()));
-        currentAccountDTO.setType("CUR");
-        currentAccountDTO.setOverdraft(currentAccount.getOverdraft());
-        return currentAccountDTO;
-    }
+    /**
+     * Convert a CurrentAccount entity to a CurrentAccountDTO
+     *
+     * @param currentAccount The CurrentAccount entity to convert
+     * @return The corresponding CurrentAccountDTO
+     */
+    @Mapping(source = "idBankAccount", target = "id")
+    @Mapping(source = "status", target = "status", qualifiedByName = "statusToString")
+    @Mapping(target = "type", constant = "CA")
+    @Mapping(source = "customer", target = "customerDTO")
+    CurrentAccountDTO fromCurrentAccount(CurrentAccount currentAccount);
 
-    public BankAccountDTO fromBankAccount(BankAccount bankAccount) {
+    /**
+     * Convert a BankAccount entity to the appropriate BankAccountDTO subtype
+     *
+     * @param bankAccount The BankAccount entity to convert
+     * @return The corresponding BankAccountDTO (either SavingAccountDTO or CurrentAccountDTO)
+     */
+    default BankAccountDTO fromBankAccount(BankAccount bankAccount) {
+        if (bankAccount == null) {
+            return null;
+        }
+
         if (bankAccount instanceof SavingAccount) {
             return fromSavingAccount((SavingAccount) bankAccount);
-        } else {
+        } else if (bankAccount instanceof CurrentAccount) {
             return fromCurrentAccount((CurrentAccount) bankAccount);
+        } else {
+            throw new ClassCastException("Unknown BankAccount type: " + bankAccount.getClass().getName());
         }
     }
 
-    public AccountOperationDTO fromOperation(Operation operation) {
-        AccountOperationDTO operationDTO = new AccountOperationDTO();
-        operationDTO.setId(operation.getId());
-        operationDTO.setOperationDate(operation.getOperationDate());
-        operationDTO.setAmount(operation.getAmount());
-        operationDTO.setOperationType(operation.getOperationType());
-        operationDTO.setDescription(operation.getDescription());
-        return operationDTO;
+    /**
+     * Convert an Operation entity to an AccountOperationDTO
+     *
+     * @param operation The Operation entity to convert
+     * @return The corresponding AccountOperationDTO
+     */
+    AccountOperationDTO fromOperation(Operation operation);
+
+    /**
+     * Convert AccountStatus to String
+     */
+    @Named("statusToString")
+    default String statusToString(AccountStatus status) {
+        return status != null ? status.toString() : null;
     }
 }
