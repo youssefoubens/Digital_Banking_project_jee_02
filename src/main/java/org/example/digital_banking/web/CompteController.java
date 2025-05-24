@@ -6,6 +6,7 @@ import org.example.digital_banking.exceptions.CustomerNotFoundException;
 import org.example.digital_banking.exceptions.InsufficientBalanceException;
 import org.example.digital_banking.services.CustomerService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,16 +23,19 @@ public class CompteController {
 
     // GET /comptes — lister tous les comptes
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<BankAccountDTO>> getAllAccounts() {
         return ResponseEntity.ok(customerService.getAllAccounts());
     }
     @GetMapping("/customer/{customerId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<BankAccountDTO>> getAllAccountsByCustomer(@PathVariable Long customerId) {
         List<BankAccountDTO> accounts = customerService.getAccountsByCustomerId(customerId);
         return ResponseEntity.ok(accounts);
     }
     // GET /comptes/{id} — afficher un compte spécifique
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BankAccountDTO> getAccountById(@PathVariable Long id) {
         try {
             BankAccountDTO account = customerService.getAccount(id);
@@ -43,6 +47,7 @@ public class CompteController {
 
     // POST /comptes — créer un compte (using DTO)
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<BankAccountDTO> createAccount(@RequestBody BankAccountRequestDTO accountDTO) {
         try {
             BankAccountDTO createdAccount = customerService.createAccount(accountDTO);
@@ -54,6 +59,7 @@ public class CompteController {
 
     // PUT /comptes/{id} — modifier un compte
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<BankAccountDTO> updateAccount(
             @PathVariable Long id,
             @RequestBody BankAccountDTO bankAccountDTO) {
@@ -67,6 +73,7 @@ public class CompteController {
 
     // DELETE /comptes/{id} — supprimer un compte
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
         try {
             customerService.deleteAccount(id);

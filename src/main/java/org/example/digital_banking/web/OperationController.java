@@ -5,6 +5,7 @@ import org.example.digital_banking.exceptions.BankAccountNotFoundException;
 import org.example.digital_banking.exceptions.InsufficientBalanceException;
 import org.example.digital_banking.services.CustomerService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class OperationController {
 
     // POST /comptes/debit — effectuer un débit
     @PostMapping("/debit")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<Void> debit(@RequestBody CreditDebitRequestDTO requestDTO) {
         try {
             customerService.debit(requestDTO.getAccountId(), requestDTO);
@@ -35,6 +37,7 @@ public class OperationController {
 
     // POST /comptes/credit — effectuer un crédit
     @PostMapping("/credit")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<Void> credit(@RequestBody CreditDebitRequestDTO requestDTO) {
         try {
             customerService.credit(requestDTO.getAccountId(), requestDTO);
@@ -46,6 +49,7 @@ public class OperationController {
 
     // POST /comptes/transfer — effectuer un virement
     @PostMapping("/transfer")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public ResponseEntity<Void> transfer(@RequestBody TransferRequestDTO transferRequestDTO) {
         try {
             customerService.transfer(transferRequestDTO);
@@ -59,6 +63,7 @@ public class OperationController {
 
     // GET /comptes/{accountId}/operations — afficher l'historique des opérations
     @GetMapping("/{accountId}/operations")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<AccountOperationDTO>> getAccountOperations(
             @PathVariable Long accountId) {
         try {

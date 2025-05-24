@@ -5,6 +5,7 @@ import org.example.digital_banking.exceptions.CustomerNotFoundException;
 import org.example.digital_banking.services.CustomerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class CustomerController {
 
     // GET /customers — lister tous les clients
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
         List<CustomerDTO> customers = customerService.getAllClients();
         return ResponseEntity.ok(customers);
@@ -28,6 +30,7 @@ public class CustomerController {
 
     // GET /customers/{id} — afficher un client
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
         try {
             CustomerDTO customer = customerService.getClientById(id);
@@ -39,6 +42,7 @@ public class CustomerController {
 
     // POST /customers — créer un nouveau client
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<CustomerDTO> createCustomer(@RequestBody CustomerDTO customerDTO) {
         try {
             CustomerDTO savedCustomer = customerService.createClient(customerDTO);
@@ -50,6 +54,7 @@ public class CustomerController {
 
     // PUT /customers/{id} — modifier un client
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<CustomerDTO> updateCustomer(
             @PathVariable Long id,
             @RequestBody CustomerDTO customerDTO) {
@@ -63,6 +68,7 @@ public class CustomerController {
 
     // DELETE /customers/{id} — supprimer un client
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         try {
             customerService.deleteClient(id);
